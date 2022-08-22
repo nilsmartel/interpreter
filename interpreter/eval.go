@@ -62,7 +62,7 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 			return nil, err
 		}
 
-		if res.IsTruthy() {
+		if res.Boolean() {
 			return Eval(env, ifStatement.True)
 		}
 		return Eval(env, ifStatement.False)
