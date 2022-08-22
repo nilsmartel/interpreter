@@ -16,8 +16,8 @@ func (i IntClass) Str() string {
 
 var intclassinfo = ClassInfo{name: "Int"}
 
-func (i IntClass) Info() ClassInfo {
-	return intclassinfo
+func (i IntClass) Info() *ClassInfo {
+	return &intclassinfo
 }
 
 type FloatClass struct {
@@ -30,22 +30,22 @@ func (f FloatClass) Str() string {
 
 var floatclassinfo = ClassInfo{name: "Float"}
 
-func (f FloatClass) Info() ClassInfo {
-	return floatclassinfo
+func (f FloatClass) Info() *ClassInfo {
+	return &floatclassinfo
 }
 
 type StringClass struct {
 	value string
 }
 
-func (f StringClass) Str() string {
+func (f *StringClass) Str() string {
 	return f.value
 }
 
 var stringclassinfo = ClassInfo{name: "String"}
 
-func (f StringClass) Info() ClassInfo {
-	return stringclassinfo
+func (f *StringClass) Info() *ClassInfo {
+	return &stringclassinfo
 }
 
 type Function struct {
@@ -64,4 +64,14 @@ func NewFunction(arguments []string, body ast.Expression) (Function, error) {
 	}
 
 	return Function{arguments, body}, nil
+}
+
+func (f *Function) Str() string {
+	return "(fun [...] ...)"
+}
+
+var functionclassinfo = ClassInfo{name: "Function"}
+
+func (f *Function) Info() *ClassInfo {
+	return &functionclassinfo
 }

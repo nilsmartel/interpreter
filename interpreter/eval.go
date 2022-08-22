@@ -25,14 +25,23 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 
 	switch expr.(type) {
 	case *ast.ClassDefinition:
-		err := defineClass(env, expr.(*ast.ClassDefinition))
+		def := expr.(*ast.ClassDefinition)
+		err := defineClass(env, def)
+		if err != nil {
+			return nil, err
+		}
+		return nil, nil
+
+	case *ast.FunctionDefinition:
+		def := expr.(*ast.FunctionDefinition)
+		err := defineFunc(env, def)
 		if err != nil {
 			return nil, err
 		}
 		return nil, nil
 	}
 
-	return nil, nil
+	return nil, errors.New("unknown expression encountered")
 }
 
 func defineClass(env *Env, def *ast.ClassDefinition) error {
@@ -44,5 +53,16 @@ func defineClass(env *Env, def *ast.ClassDefinition) error {
 	constructor := value.NewNativeFunction(classInfo.MakeInstance)
 
 	env.DefineGlobal(def.Name, constructor)
+	return nil
+}
+
+func defineFunc(env *Env, def *ast.FunctionDefinition) error {
+	// TODO this is the spot to include information about codeposition in file, row, col
+	// for stacktraces etc.
+	function, err := value.NewFunction(def.Args, def.Body)
+	if err != nil {
+		return err
+	}
+	env.DefineGlobal(def.Name, &function)
 	return nil
 }
