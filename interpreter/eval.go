@@ -31,6 +31,9 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 
 func defineClass(env *Env, def *ast.ClassDefinition) error {
 	classInfo, err := value.NewClassInfo(def.Name, def.Fields)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
