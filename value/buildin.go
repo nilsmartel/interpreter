@@ -14,7 +14,7 @@ func (i IntClass) Str() string {
 	return fmt.Sprint(i.value)
 }
 
-var intclassinfo = ClassInfo{Name: "Int"}
+var intclassinfo = ClassInfo{name: "Int"}
 
 func (i IntClass) Info() ClassInfo {
 	return intclassinfo
@@ -28,7 +28,7 @@ func (f FloatClass) Str() string {
 	return fmt.Sprint(f.value)
 }
 
-var floatclassinfo = ClassInfo{Name: "Float"}
+var floatclassinfo = ClassInfo{name: "Float"}
 
 func (f FloatClass) Info() ClassInfo {
 	return floatclassinfo
@@ -42,7 +42,7 @@ func (f StringClass) Str() string {
 	return f.value
 }
 
-var stringclassinfo = ClassInfo{Name: "String"}
+var stringclassinfo = ClassInfo{name: "String"}
 
 func (f StringClass) Info() ClassInfo {
 	return stringclassinfo
