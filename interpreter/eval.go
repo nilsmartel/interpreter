@@ -25,8 +25,14 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 
 	switch expr.(type) {
 	case *ast.ClassDefinition:
-		defineClass(env, expr.(*ast.ClassDefinition))
+		err := defineClass(env, expr.(*ast.ClassDefinition))
+		if err != nil {
+			return nil, err
+		}
+		return nil, nil
 	}
+
+	return nil, nil
 }
 
 func defineClass(env *Env, def *ast.ClassDefinition) error {
@@ -35,5 +41,8 @@ func defineClass(env *Env, def *ast.ClassDefinition) error {
 		return err
 	}
 
+	constructor := value.NewNativeFunction(classInfo.MakeInstance)
+
+	env.DefineGlobal(def.Name, constructor)
 	return nil
 }

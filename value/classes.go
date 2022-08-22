@@ -1,6 +1,9 @@
 package value
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 type ClassInfo struct {
 	name     string
@@ -22,6 +25,22 @@ func NewClassInfo(name string, fields []string) (ClassInfo, error) {
 	}
 
 	return ClassInfo{name, size, fieldIds}, nil
+}
+
+func (c *ClassInfo) MakeInstance(values []Object) (Object, error) {
+	if len(values) != c.size {
+		return nil, errors.New(fmt.Sprint(
+			"failed to create instance of class",
+			c.name+".",
+			"Expected", c.size, "fields as arguments. Got",
+			len(values),
+		))
+	}
+
+	return &Class{
+		fields: values,
+		info:   c,
+	}, nil
 }
 
 type Class struct {
