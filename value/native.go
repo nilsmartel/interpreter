@@ -21,3 +21,7 @@ var info = ClassInfo{name: "Native Function"}
 func (i *NativeFunction) Info() *ClassInfo {
 	return &info
 }
+
+func (c *NativeFunction) Boolean() bool {
+	return true
+}

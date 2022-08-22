@@ -48,6 +48,10 @@ type Class struct {
 	info   *ClassInfo
 }
 
+func (c *Class) Boolean() bool {
+	return true
+}
+
 func (c *Class) Get(ident string) (Object, error) {
 	if id, ok := c.info.fieldIds[ident]; ok {
 		return c.fields[id], nil

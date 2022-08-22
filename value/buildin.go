@@ -6,8 +6,50 @@ import (
 	"interpreter/ast"
 )
 
+type NilClass struct {
+}
+
+func (i NilClass) Boolean() bool {
+	return false
+}
+
+func (i NilClass) Str() string {
+	return "nil"
+}
+
+var nilclassinfo = ClassInfo{name: "Nil"}
+
+func (i NilClass) Info() *ClassInfo {
+	return &nilclassinfo
+}
+
+type BoolClass struct {
+	value bool
+}
+
+func (i BoolClass) Boolean() bool {
+	return i.value
+}
+
+func (i BoolClass) Str() string {
+	if i.value {
+		return "true"
+	}
+	return "false"
+}
+
+var boolclassinfo = ClassInfo{name: "Bool"}
+
+func (i BoolClass) Info() *ClassInfo {
+	return &boolclassinfo
+}
+
 type IntClass struct {
 	value int64
+}
+
+func (i IntClass) Boolean() bool {
+	return i.value != 0
 }
 
 func (i IntClass) Str() string {
@@ -24,6 +66,10 @@ type FloatClass struct {
 	value float64
 }
 
+func (c *FloatClass) Boolean() bool {
+	return c.value != 0.0
+}
+
 func (f FloatClass) Str() string {
 	return fmt.Sprint(f.value)
 }
@@ -36,6 +82,10 @@ func (f FloatClass) Info() *ClassInfo {
 
 type StringClass struct {
 	value string
+}
+
+func (s *StringClass) Boolean() bool {
+	return true
 }
 
 func (f *StringClass) Str() string {
@@ -64,6 +114,10 @@ func NewFunction(arguments []string, body ast.Expression) (Function, error) {
 	}
 
 	return Function{arguments, body}, nil
+}
+
+func (f *Function) Boolean() bool {
+	return true
 }
 
 func (f *Function) Str() string {

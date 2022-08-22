@@ -1,25 +1,41 @@
 package ast
 
-import "errors"
+type DoFlow struct {
+	Statements []Expression
+}
 
+type IfFlow struct {
+	Condition Expression
+	True      Expression
+	False     Expression
+}
+
+type OrFlow struct {
+	Arguments []Expression
+}
+
+type AndFlow struct {
+	Arguments []Expression
+}
+
+/*
 type Tag = int
 
 const (
 	Do = iota
+	If
+	OrChain
+	AndChain
+
+	// TODO rewrite as native functions
 	Async
 	Await
-
 	Add
 	Subtract
 	Multiply
 	Modulus
 	Divide
 	Power
-
-	OrChain
-	AndChain
-
-	If
 )
 
 // (do a b c d e f g)
@@ -32,6 +48,13 @@ func ToBuildIn(s string) (Tag, error) {
 	switch s {
 	case "do":
 		return Do, nil
+	case "or":
+		return OrChain, nil
+	case "and":
+		return AndChain, nil
+	case "if":
+		return If, nil
+	// TODO the rest are actually native functions
 	case "<3":
 		return Async, nil
 	case "..":
@@ -48,13 +71,8 @@ func ToBuildIn(s string) (Tag, error) {
 		return Divide, nil
 	case "**":
 		return Power, nil
-	case "or":
-		return OrChain, nil
-	case "and":
-		return AndChain, nil
-	case "if":
-		return If, nil
 	}
 
 	return 0, errors.New("not a buildin function")
 }
+*/

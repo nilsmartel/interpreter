@@ -39,6 +39,60 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 			return nil, err
 		}
 		return nil, nil
+
+	case *ast.DoFlow:
+		statements := expr.(*ast.DoFlow).Statements
+		var r value.Object
+		var err error
+
+		for _, statement := range statements {
+			r, err = Eval(env, statement)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		return r, nil
+
+	case *ast.IfFlow:
+		ifStatement := expr.(*ast.IfFlow)
+
+		res, err := Eval(env, ifStatement.Condition)
+		if err != nil {
+			return nil, err
+		}
+
+		if res.IsTruthy() {
+			return Eval(env, ifStatement.True)
+		}
+		return Eval(env, ifStatement.False)
+
+	case *ast.DoFlow:
+		statements := expr.(*ast.DoFlow).Statements
+		var r value.Object
+		var err error
+
+		for _, statement := range statements {
+			r, err = Eval(env, statement)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		return r, nil
+	case *ast.DoFlow:
+		statements := expr.(*ast.DoFlow).Statements
+		var r value.Object
+		var err error
+
+		for _, statement := range statements {
+			r, err = Eval(env, statement)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		return r, nil
 	}
 
 	return nil, errors.New("unknown expression encountered")
