@@ -183,6 +183,21 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 			values = append(values, v)
 		}
 		return value.NewArray(values...), nil
+
+	// (let x y body)
+	case *ast.VariableDefiniton:
+		def := expr.(*ast.VariableDefiniton)
+
+		// first evaluate variable assignment
+		val, err := Eval(env, def.Value)
+		if err != nil {
+			return nil, err
+		}
+
+		// overshadow what has been
+		return env.LetIn(def.Ident, val, func(env *Env) (value.Object, error) {
+			return Eval(env, def.Body)
+		})
 	}
 
 	return nil, errors.New("unknown expression encountered")
@@ -207,6 +222,6 @@ func defineFunc(env *Env, def *ast.FunctionDefinition) error {
 	if err != nil {
 		return err
 	}
-	env.DefineGlobal(def.Name, &function)
+	env.DefineGlobal(def.Name, function)
 	return nil
 }

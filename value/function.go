@@ -6,6 +6,8 @@ import (
 )
 
 type Function struct {
+	// optional variadic arguments are a nice thing to have
+	// VarArg string
 	Args []string
 	Body ast.Expression
 }
