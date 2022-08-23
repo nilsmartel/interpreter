@@ -142,6 +142,34 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 		}
 
 		return call(env, function, args)
+
+	// Literals
+	case *ast.IdentLiteral:
+		ident := expr.(*ast.IdentLiteral).Value
+		return env.Get(ident)
+
+	case *ast.BoolLiteral:
+		val := expr.(*ast.BoolLiteral).Value
+		return value.NewBool(val), nil
+
+	case *ast.NilLiteral:
+		return value.Nil(), nil
+
+	case *ast.IntLiteral:
+		val := expr.(*ast.IntLiteral).Value
+		return value.NewInt(val), nil
+
+	case *ast.FloatLiteral:
+		val := expr.(*ast.FloatLiteral).Value
+		return value.NewFloat(val), nil
+
+	case *ast.StringLiteral:
+		val := expr.(*ast.StringLiteral).Value
+		return value.NewString(val), nil
+
+	case *ast.LambdaLiteral:
+		lit := expr.(*ast.LambdaLiteral)
+		return value.NewFunction(lit.Arguments, lit.Body)
 	}
 
 	return nil, errors.New("unknown expression encountered")
