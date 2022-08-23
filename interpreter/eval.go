@@ -170,6 +170,19 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 	case *ast.LambdaLiteral:
 		lit := expr.(*ast.LambdaLiteral)
 		return value.NewFunction(lit.Arguments, lit.Body)
+
+	case *ast.ArrayLiteral:
+		expressions := expr.(*ast.ArrayLiteral).Values
+		values := make([]value.Object, len(expressions))
+		for _, expr := range expressions {
+			v, err := Eval(env, expr)
+			if err != nil {
+				return nil, err
+			}
+
+			values = append(values, v)
+		}
+		return value.NewArray(values...), nil
 	}
 
 	return nil, errors.New("unknown expression encountered")
