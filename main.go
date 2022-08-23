@@ -64,8 +64,10 @@ func buildin(env *interpreter.Env) {
 
 	env.DefineGlobal("println", value.NewNativeFunction(func(o []value.Object) (value.Object, error) {
 		for _, obj := range o {
-			fmt.Println(obj.Str())
+			fmt.Print(obj.Str())
 		}
+		fmt.Println()
+
 		return value.Nil(), nil
 	}))
 
