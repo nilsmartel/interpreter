@@ -2,6 +2,11 @@ package parsing
 
 const (
 	Identifier = iota
+
+	Int
+	Float
+	String
+
 	ParenOpen
 	ParenClosing
 	BracketOpen
@@ -42,9 +47,21 @@ func NextToken(input string) (Token, string, error) {
 	}
 
 	// check if we have whitespace
-	ws, rest := takeWhitespace(input)
-	if ws != "" {
+	if ws, rest := takeWhitespace(input); ws != "" {
 		return Token{Tag: Whitespace, Span: ws}, rest, nil
+	}
+
+	if num, floating, rest := takeNumber(input); num != "" {
+		tag := Int
+		if floating {
+			tag = Float
+		}
+
+		return Token{Tag: tag, Span: num}, rest, nil
+	}
+
+	if str, rest := takeString(input); str != "" {
+		return Token{Tag: String, Span: str}, rest, nil
 	}
 
 	// must be an identifier
