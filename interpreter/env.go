@@ -14,6 +14,10 @@ type Env struct {
 	locals  map[string]value.Object
 }
 
+func NewEnv() *Env {
+	return &Env{globals: make(map[string]value.Object), locals: make(map[string]value.Object)}
+}
+
 func (e *Env) NewScope() *Env {
 	return &Env{
 		globals: e.globals,
