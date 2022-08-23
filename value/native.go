@@ -23,3 +23,35 @@ func (i *NativeFunction) Class() string {
 func (c *NativeFunction) Boolean() bool {
 	return true
 }
+
+// TODO Native functions to be included
+
+/*
+	Async
+	Await
+	Add
+	Subtract
+	Multiply
+	Modulus
+	Divide
+	Power
+
+	bitor
+	bitand
+	bitxor
+	bitshl
+	bitshr
+	bitnot
+
+	// functions to deal with io
+
+	read "filename"
+	readBytes "filename"
+
+	write "filename" str
+	writebytes "filename" []int
+
+	print
+	println
+	printbytes
+*/
