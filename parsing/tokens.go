@@ -6,13 +6,13 @@ const (
 	ParenClosing
 	BracketOpen
 	BracketClosing
-	// not yet used
-	CurlyOpen
-	CurlyClosing
-
 	Whitespace
 
 	EndOfInput
+
+	// not yet used
+	CurlyOpen
+	CurlyClosing
 )
 
 type Token struct {
