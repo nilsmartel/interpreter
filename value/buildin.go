@@ -17,10 +17,8 @@ func (i NilClass) Str() string {
 	return "nil"
 }
 
-var nilclassinfo = ClassInfo{name: "Nil"}
-
-func (i NilClass) Info() *ClassInfo {
-	return &nilclassinfo
+func (i NilClass) Class() string {
+	return "Nil"
 }
 
 type BoolClass struct {
@@ -38,10 +36,8 @@ func (i BoolClass) Str() string {
 	return "false"
 }
 
-var boolclassinfo = ClassInfo{name: "Bool"}
-
-func (i BoolClass) Info() *ClassInfo {
-	return &boolclassinfo
+func (i BoolClass) Class() string {
+	return "Bool"
 }
 
 type IntClass struct {
@@ -56,10 +52,8 @@ func (i IntClass) Str() string {
 	return fmt.Sprint(i.value)
 }
 
-var intclassinfo = ClassInfo{name: "Int"}
-
-func (i IntClass) Info() *ClassInfo {
-	return &intclassinfo
+func (i IntClass) Class() string {
+	return "Int"
 }
 
 type FloatClass struct {
@@ -74,10 +68,8 @@ func (f FloatClass) Str() string {
 	return fmt.Sprint(f.value)
 }
 
-var floatclassinfo = ClassInfo{name: "Float"}
-
-func (f FloatClass) Info() *ClassInfo {
-	return &floatclassinfo
+func (f FloatClass) Class() string {
+	return "Float"
 }
 
 type StringClass struct {
@@ -92,10 +84,8 @@ func (f *StringClass) Str() string {
 	return f.value
 }
 
-var stringclassinfo = ClassInfo{name: "String"}
-
-func (f *StringClass) Info() *ClassInfo {
-	return &stringclassinfo
+func (f *StringClass) Class() string {
+	return "String"
 }
 
 type Function struct {
@@ -124,8 +114,6 @@ func (f *Function) Str() string {
 	return "(fun [...] ...)"
 }
 
-var functionclassinfo = ClassInfo{name: "Function"}
-
-func (f *Function) Info() *ClassInfo {
-	return &functionclassinfo
+func (f *Function) Class() string {
+	return "Function"
 }

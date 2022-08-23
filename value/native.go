@@ -16,10 +16,8 @@ func (f *NativeFunction) Str() string {
 	return ":native code:"
 }
 
-var info = ClassInfo{name: "Native Function"}
-
-func (i *NativeFunction) Info() *ClassInfo {
-	return &info
+func (i *NativeFunction) Info() string {
+	return "Native Function"
 }
 
 func (c *NativeFunction) Boolean() bool {
