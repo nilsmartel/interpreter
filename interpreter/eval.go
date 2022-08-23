@@ -7,7 +7,27 @@ import (
 	"interpreter/value"
 )
 
-func Call(env *Env, f *value.Function, args []value.Object) (value.Object, error) {
+func call(env *Env, caller value.Object, args []value.Object) (value.Object, error) {
+	switch caller.(type) {
+	case *value.Function:
+		f := caller.(*value.Function)
+		return callFunction(env, f, args)
+	case *value.NativeFunction:
+		f := caller.(*value.NativeFunction)
+		return f.Call(args)
+	case *value.Class:
+		c := caller.(*value.Class)
+		f, err := c.Get("call")
+		if err != nil {
+			return nil, errors.New("class " + caller.Class() + " does not defined `call` method and is not callable.")
+		}
+		return call(env, f, args)
+	}
+
+	return nil, errors.New("value of type " + caller.Class() + " is not callable")
+}
+
+func callFunction(env *Env, f *value.Function, args []value.Object) (value.Object, error) {
 	if len(args) != len(f.Args) {
 		return nil, errors.New(fmt.Sprint("called function with", len(args), "arguments, expected", len(f.Args)))
 	}
@@ -102,6 +122,26 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 		}
 
 		return r, nil
+
+	case *ast.Call:
+		c := expr.(*ast.Call)
+
+		function, err := Eval(env, c.Function)
+		if err != nil {
+			return nil, err
+		}
+
+		args := make([]value.Object, len(c.Arguments))
+		for _, arg := range c.Arguments {
+			value, err := Eval(env, arg)
+			if err != nil {
+				return nil, err
+			}
+
+			args = append(args, value)
+		}
+
+		return call(env, function, args)
 	}
 
 	return nil, errors.New("unknown expression encountered")

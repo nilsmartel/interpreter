@@ -16,7 +16,7 @@ func (f *NativeFunction) Str() string {
 	return ":native code:"
 }
 
-func (i *NativeFunction) Info() string {
+func (i *NativeFunction) Class() string {
 	return "Native Function"
 }
 
