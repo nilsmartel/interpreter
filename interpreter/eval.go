@@ -67,8 +67,8 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 		}
 		return Eval(env, ifStatement.False)
 
-	case *ast.DoFlow:
-		statements := expr.(*ast.DoFlow).Statements
+	case *ast.OrFlow:
+		statements := expr.(*ast.OrFlow).Arguments
 		var r value.Object
 		var err error
 
@@ -77,11 +77,16 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 			if err != nil {
 				return nil, err
 			}
+
+			if r.Boolean() {
+				return r, nil
+			}
 		}
 
 		return r, nil
-	case *ast.DoFlow:
-		statements := expr.(*ast.DoFlow).Statements
+
+	case *ast.AndFlow:
+		statements := expr.(*ast.OrFlow).Arguments
 		var r value.Object
 		var err error
 
@@ -89,6 +94,10 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 			r, err = Eval(env, statement)
 			if err != nil {
 				return nil, err
+			}
+
+			if !r.Boolean() {
+				return r, nil
 			}
 		}
 
