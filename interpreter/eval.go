@@ -123,6 +123,26 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 
 		return r, nil
 
+	case *ast.NamedCall:
+		c := expr.(*ast.NamedCall)
+
+		function, err := env.Get(c.Function)
+		if err != nil {
+			return nil, err
+		}
+
+		args := make([]value.Object, len(c.Arguments))
+		for _, arg := range c.Arguments {
+			value, err := Eval(env, arg)
+			if err != nil {
+				return nil, err
+			}
+
+			args = append(args, value)
+		}
+
+		return call(env, function, args)
+
 	case *ast.Call:
 		c := expr.(*ast.Call)
 
