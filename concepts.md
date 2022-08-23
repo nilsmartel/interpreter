@@ -1,5 +1,27 @@
 # Concepts
 
+## Language
+
+### Function Overloading
+using match
+
+instead of specifying names of arguments, one can simply capture using match arms
+
+
+e.g.
+
+    (fun git
+        ["clone" repo] (...)
+        ["push"] (...))
+
+but also across domains!
+
+    (do
+        ["a" n] (...)
+        [8] (...)
+        [1 y 1] (...)
+        ["tell" user] (str "hello " user))
+
 ## Repl
 
 - undo / redo
