@@ -55,6 +55,8 @@ func parseArray(tokens []Token) (ast.Expression, []Token, error) {
 }
 
 // (a b c)
+// or
+// (<3 a b c)
 func parseExpr(tokens []Token) (ast.Expression, []Token, error) {
 	expr, rest, err := parseList(tokens, ParenClosing, ")")
 	if err != nil {
@@ -66,10 +68,23 @@ func parseExpr(tokens []Token) (ast.Expression, []Token, error) {
 		return ast.NilLiteral{}, rest, nil
 	}
 
+	if tokens[0].Tag == Heart {
+		call, rest, err := parseExpr(tokens[1:])
+		if err != nil {
+			return nil, nil, err
+		}
+
+		if call, ok := call.(ast.NamedCall); ok {
+			return ast.Coroutine{Call: call}, rest, nil
+		}
+
+		return nil, nil, errors.New("only named function calls are allowed to be async for now")
+	}
+
 	fst := expr[0]
 	expr = expr[1:]
 
-	if str, ok := fst.(*ast.IdentLiteral); ok {
+	if str, ok := fst.(ast.IdentLiteral); ok {
 		ty := str.Value
 		switch ty {
 		case "do":
@@ -88,7 +103,7 @@ func parseExpr(tokens []Token) (ast.Expression, []Token, error) {
 			if len(expr) != 3 {
 				return nil, rest, errors.New("expected precisely 3 arguments to let")
 			}
-			if ident, ok := expr[0].(*ast.IdentLiteral); ok {
+			if ident, ok := expr[0].(ast.IdentLiteral); ok {
 				val := expr[1]
 				body := expr[2]
 
