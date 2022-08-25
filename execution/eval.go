@@ -8,13 +8,11 @@ import (
 )
 
 func call(env *Env, caller value.Object, args []value.Object) (value.Object, error) {
-	switch caller.(type) {
+	switch caller := caller.(type) {
 	case *value.Function:
-		f := caller.(*value.Function)
-		return callFunction(env, f, args)
+		return callFunction(env, caller, args)
 	case *value.NativeFunction:
-		f := caller.(*value.NativeFunction)
-		return f.Call(args)
+		return caller.Call(args)
 		// case *value.Class:
 		// 	c := caller.(*value.Class)
 		// 	f, err := c.Get("call")
@@ -43,29 +41,26 @@ func callFunction(env *Env, f *value.Function, args []value.Object) (value.Objec
 
 func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 
-	switch expr.(type) {
+	switch expr := expr.(type) {
 	case *ast.ClassDefinition:
-		def := expr.(*ast.ClassDefinition)
-		err := defineClass(env, def)
+		err := defineClass(env, expr)
 		if err != nil {
 			return nil, err
 		}
 		return nil, nil
 
 	case *ast.FunctionDefinition:
-		def := expr.(*ast.FunctionDefinition)
-		err := defineFunc(env, def)
+		err := defineFunc(env, expr)
 		if err != nil {
 			return nil, err
 		}
 		return nil, nil
 
 	case *ast.DoFlow:
-		statements := expr.(*ast.DoFlow).Statements
 		var r value.Object
 		var err error
 
-		for _, statement := range statements {
+		for _, statement := range expr.Statements {
 			r, err = Eval(env, statement)
 			if err != nil {
 				return nil, err
@@ -75,24 +70,22 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 		return r, nil
 
 	case *ast.IfFlow:
-		ifStatement := expr.(*ast.IfFlow)
 
-		res, err := Eval(env, ifStatement.Condition)
+		res, err := Eval(env, expr.Condition)
 		if err != nil {
 			return nil, err
 		}
 
 		if res.Boolean() {
-			return Eval(env, ifStatement.True)
+			return Eval(env, expr.True)
 		}
-		return Eval(env, ifStatement.False)
+		return Eval(env, expr.False)
 
 	case *ast.OrFlow:
-		statements := expr.(*ast.OrFlow).Arguments
 		var r value.Object
 		var err error
 
-		for _, statement := range statements {
+		for _, statement := range expr.Arguments {
 			r, err = Eval(env, statement)
 			if err != nil {
 				return nil, err
@@ -106,11 +99,10 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 		return r, nil
 
 	case *ast.AndFlow:
-		statements := expr.(*ast.OrFlow).Arguments
 		var r value.Object
 		var err error
 
-		for _, statement := range statements {
+		for _, statement := range expr.Arguments {
 			r, err = Eval(env, statement)
 			if err != nil {
 				return nil, err
@@ -124,15 +116,14 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 		return r, nil
 
 	case *ast.NamedCall:
-		c := expr.(*ast.NamedCall)
 
-		function, err := env.Get(c.Function)
+		function, err := env.Get(expr.Function)
 		if err != nil {
 			return nil, err
 		}
 
-		args := make([]value.Object, len(c.Arguments))
-		for _, arg := range c.Arguments {
+		args := make([]value.Object, len(expr.Arguments))
+		for _, arg := range expr.Arguments {
 			value, err := Eval(env, arg)
 			if err != nil {
 				return nil, err
@@ -144,15 +135,14 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 		return call(env, function, args)
 
 	case *ast.Call:
-		c := expr.(*ast.Call)
 
-		function, err := Eval(env, c.Function)
+		function, err := Eval(env, expr.Function)
 		if err != nil {
 			return nil, err
 		}
 
-		args := make([]value.Object, len(c.Arguments))
-		for _, arg := range c.Arguments {
+		args := make([]value.Object, len(expr.Arguments))
+		for _, arg := range expr.Arguments {
 			value, err := Eval(env, arg)
 			if err != nil {
 				return nil, err
@@ -165,36 +155,29 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 
 	// Literals
 	case *ast.IdentLiteral:
-		ident := expr.(*ast.IdentLiteral).Value
-		return env.Get(ident)
+		return env.Get(expr.Value)
 
 	case *ast.BoolLiteral:
-		val := expr.(*ast.BoolLiteral).Value
-		return value.NewBool(val), nil
+		return value.NewBool(expr.Value), nil
 
 	case *ast.NilLiteral:
 		return value.Nil(), nil
 
 	case *ast.IntLiteral:
-		val := expr.(*ast.IntLiteral).Value
-		return value.NewInt(val), nil
+		return value.NewInt(expr.Value), nil
 
 	case *ast.FloatLiteral:
-		val := expr.(*ast.FloatLiteral).Value
-		return value.NewFloat(val), nil
+		return value.NewFloat(expr.Value), nil
 
 	case *ast.StringLiteral:
-		val := expr.(*ast.StringLiteral).Value
-		return value.NewString(val), nil
+		return value.NewString(expr.Value), nil
 
 	case *ast.LambdaLiteral:
-		lit := expr.(*ast.LambdaLiteral)
-		return value.NewFunction(lit.Arguments, lit.Body)
+		return value.NewFunction(expr.Arguments, expr.Body)
 
 	case *ast.ArrayLiteral:
-		expressions := expr.(*ast.ArrayLiteral).Values
-		values := make([]value.Object, len(expressions))
-		for _, expr := range expressions {
+		values := make([]value.Object, len(expr.Values))
+		for _, expr := range expr.Values {
 			v, err := Eval(env, expr)
 			if err != nil {
 				return nil, err
@@ -206,17 +189,15 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 
 	// (let x y body)
 	case *ast.VariableDefiniton:
-		def := expr.(*ast.VariableDefiniton)
-
 		// first evaluate variable assignment
-		val, err := Eval(env, def.Value)
+		val, err := Eval(env, expr.Value)
 		if err != nil {
 			return nil, err
 		}
 
 		// overshadow what has been
-		return env.LetIn(def.Ident, val, func(env *Env) (value.Object, error) {
-			return Eval(env, def.Body)
+		return env.LetIn(expr.Ident, val, func(env *Env) (value.Object, error) {
+			return Eval(env, expr.Body)
 		})
 	}
 
