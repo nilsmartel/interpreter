@@ -7,6 +7,8 @@ const (
 	Float
 	String
 
+	Heart
+
 	ParenOpen
 	ParenClosing
 	BracketOpen
@@ -44,6 +46,11 @@ func NextToken(input string) (Token, string, error) {
 		return Token{Tag: CurlyOpen, Span: fst}, rest, nil
 	case "}":
 		return Token{Tag: CurlyClosing, Span: fst}, rest, nil
+	}
+
+	// check for <3
+	if heart, rest := tagHeart(input); heart != "" {
+		return Token{Tag: Heart, Span: heart}, rest, nil
 	}
 
 	// check if we have whitespace

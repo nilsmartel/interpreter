@@ -17,6 +17,14 @@ func splitAt(s string, n int) (string, string) {
 	return s, ""
 }
 
+func tagHeart(s string) (string, string) {
+	if strings.HasPrefix(s, "<3") {
+		return "<3", s[2:]
+	}
+
+	return "", s
+}
+
 func takeWhitespace(s string) (string, string) {
 	strIndex := 0
 	for i, c := range s {
