@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"interpreter/interpreter"
+	"interpreter/execution"
 	"interpreter/parsing"
 	"interpreter/value"
 	"io/ioutil"
@@ -25,7 +25,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	env := interpreter.NewEnv()
+	env := execution.NewEnv()
 	// TODO populate env with defaults
 	buildin(env)
 
@@ -35,7 +35,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	res, err := interpreter.Eval(env, ast)
+	res, err := execution.Eval(env, ast)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -48,7 +48,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		res, err = interpreter.Eval(env, ast)
+		res, err = execution.Eval(env, ast)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
@@ -58,7 +58,7 @@ func main() {
 	fmt.Println(res.Str())
 }
 
-func buildin(env *interpreter.Env) {
+func buildin(env *execution.Env) {
 	env.DefineGlobal("true", value.NewBool(true))
 	env.DefineGlobal("false", value.NewBool(false))
 
