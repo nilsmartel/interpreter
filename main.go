@@ -7,7 +7,6 @@ import (
 	"interpreter/value"
 	"io/ioutil"
 	"os"
-	"strings"
 )
 
 func main() {
@@ -25,11 +24,6 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-
-	for _, t := range tokens {
-		println(strings.Trim(t.Span, "\n"))
-	}
-	os.Exit(0)
 
 	env := execution.NewEnv()
 	// TODO populate env with defaults
