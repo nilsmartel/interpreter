@@ -7,6 +7,19 @@ import (
 )
 
 func Parse(tokens []Token) (ast.Expression, []Token, error) {
+	ts := make([]Token, 0)
+
+	for _, t := range tokens {
+		if t.Tag == Whitespace {
+			continue
+		}
+		ts = append(ts, t)
+	}
+
+	return ParseCleaned(ts)
+}
+
+func ParseCleaned(tokens []Token) (ast.Expression, []Token, error) {
 	if len(tokens) == 0 {
 		return nil, tokens, Expected{Candidates: "<expr>"}
 	}
@@ -122,7 +135,7 @@ func parseList(tokens []Token, closingTag int, expectedClosing string) ([]ast.Ex
 	exprs := make([]ast.Expression, 0)
 
 	for len(tokens) > 0 && tokens[0].Tag != closingTag {
-		expr, rest, err := Parse(tokens)
+		expr, rest, err := ParseCleaned(tokens)
 		if err != nil {
 			return nil, nil, err
 		}

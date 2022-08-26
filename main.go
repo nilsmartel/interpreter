@@ -29,7 +29,7 @@ func main() {
 	// TODO populate env with defaults
 	buildin(env)
 
-	ast, rest, err := parsing.Parse(tokens)
+	ast, rest, err := parsing.ParseCleaned(tokens)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
