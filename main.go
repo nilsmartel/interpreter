@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	filename := os.Args[1]
+	filename := "sample/1-print.lisp" // os.Args[1]
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		fmt.Println("error reading file", err)

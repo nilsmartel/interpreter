@@ -5,7 +5,7 @@ type NativeFunction struct {
 }
 
 func NewNativeFunction(fn func([]Object) (Object, error)) *NativeFunction {
-	return NewNativeFunction(fn)
+	return &NativeFunction{fn}
 }
 
 func (f *NativeFunction) Call(values []Object) (Object, error) {

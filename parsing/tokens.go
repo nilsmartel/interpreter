@@ -86,6 +86,7 @@ func Tokenize(input string) ([]Token, error) {
 		}
 
 		tokens = append(tokens, t)
+		input = rest
 
 		if rest == "" {
 			break
