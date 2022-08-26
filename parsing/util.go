@@ -26,43 +26,42 @@ func tagHeart(s string) (string, string) {
 }
 
 func takeWhitespace(s string) (string, string) {
-	strIndex := 0
 	for i, c := range s {
 		if !unicode.IsSpace(c) {
-			break
+			return s[:i], s[i:]
 		}
-
-		strIndex += i
-		continue
 	}
 
-	return s[strIndex:], s[:strIndex]
+	return s, ""
 }
 
-func takeNonWhitespace(s string) (string, string) {
-	strIndex := 0
-	for i, c := range s {
-		if !unicode.IsSpace(c) {
-			break
-		}
-		strIndex += i
-		continue
+func isSpecial(c rune) bool {
+	switch c {
+	case '(', ')', '[', ']', '{', '}', '"', '\'':
+		return true
 	}
 
-	return s[strIndex:], s[:strIndex]
+	return false
+}
+
+func takeIdent(s string) (string, string) {
+	for i, c := range s {
+		if unicode.IsSpace(c) || isSpecial(c) {
+			return s[:i], s[i:]
+		}
+	}
+
+	return s, ""
 }
 
 func takeInt(s string) (string, string) {
-	strIndex := 0
 	for i, c := range s {
 		if !unicode.IsDigit(c) {
-			break
+			return s[:i], s[i:]
 		}
-		strIndex += i
-		continue
 	}
 
-	return s[strIndex:], s[:strIndex]
+	return s, ""
 }
 
 func takeNumber(s string) (string, bool, string) {
@@ -98,11 +97,12 @@ func takeString(s string) (string, string) {
 	}
 
 	escaped := false
-	i := 0
-	var c rune
-	for i, c = range s[1:] {
-		if c == '"' && escaped == false {
-			break
+	for i, c := range s[1:] {
+		if c == '"' && !escaped {
+			// increment to respect leading "
+			// and in order to contain " symbol
+			i += 2
+			return s[:i], s[i:]
 		}
 
 		escaped = false
@@ -112,7 +112,5 @@ func takeString(s string) (string, string) {
 		}
 	}
 
-	// increment to respect leading "
-	i += 1
-	return s[:i], s[i:]
+	return s, "" // error here. Expected "
 }

@@ -122,7 +122,7 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 			return nil, err
 		}
 
-		args := make([]value.Object, len(expr.Arguments))
+		args := make([]value.Object, 0, len(expr.Arguments))
 		for _, arg := range expr.Arguments {
 			value, err := Eval(env, arg)
 			if err != nil {
@@ -141,7 +141,7 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 			return nil, err
 		}
 
-		args := make([]value.Object, len(expr.Arguments))
+		args := make([]value.Object, 0, len(expr.Arguments))
 		for _, arg := range expr.Arguments {
 			value, err := Eval(env, arg)
 			if err != nil {
@@ -176,7 +176,7 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 		return value.NewFunction(expr.Arguments, expr.Body)
 
 	case *ast.ArrayLiteral:
-		values := make([]value.Object, len(expr.Values))
+		values := make([]value.Object, 0, len(expr.Values))
 		for _, expr := range expr.Values {
 			v, err := Eval(env, expr)
 			if err != nil {

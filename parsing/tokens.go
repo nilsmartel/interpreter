@@ -72,7 +72,7 @@ func NextToken(input string) (Token, string, error) {
 	}
 
 	// must be an identifier
-	ident, rest := takeNonWhitespace(input)
+	ident, rest := takeIdent(input)
 	return Token{Tag: Identifier, Span: ident}, rest, nil
 }
 

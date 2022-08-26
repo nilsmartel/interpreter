@@ -11,7 +11,7 @@ func template(s string) []string {
 }
 
 func strOfTokens(t []parsing.Token) []string {
-	s := make([]string, len(t))
+	s := make([]string, 0, len(t))
 
 	for _, token := range t {
 		s = append(s, token.Span)
@@ -38,6 +38,8 @@ func TestTokenization(t *testing.T) {
 	cases := [][]string{
 		{"(print 7)", "(,print, ,7,)"},
 		{"((a b) c)", "(,(,a, ,b,), ,c,)"},
+		{"(print \"hello\")", "(,print, ,\"hello\",)"},
+		{"(print \"\")", "(,print, ,\"\",)"},
 	}
 
 	for _, c := range cases {
@@ -53,7 +55,7 @@ func TestTokenization(t *testing.T) {
 		s := strOfTokens(tokens)
 
 		if !cmp(s, expected) {
-			t.Error("expected:", strings.Join(expected, ","), "\ngot:", strings.Join(s, ","))
+			t.Error("\nexpected:", strings.Join(expected, ","), "\n     got:", strings.Join(s, ","))
 		}
 
 	}
