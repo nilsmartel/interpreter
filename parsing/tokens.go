@@ -1,5 +1,7 @@
 package parsing
 
+import "fmt"
+
 const (
 	Identifier = iota
 
@@ -22,9 +24,46 @@ const (
 	CurlyClosing
 )
 
+func tagToStr(tag int) string {
+	switch tag {
+	case Identifier:
+		return "Identifier"
+	case Int:
+		return "Int"
+	case Float:
+		return "Float"
+	case String:
+		return "String"
+	case Heart:
+		return "Heart"
+	case ParenOpen:
+		return "ParenOpen"
+	case ParenClosing:
+		return "ParenClosing"
+	case BracketOpen:
+		return "BracketOpen"
+	case BracketClosing:
+		return "BracketClosing"
+	case Whitespace:
+		return "Whitespace"
+	case EndOfInput:
+		return "EndOfInput"
+	case CurlyOpen:
+		return "CurlyOpen"
+	case CurlyClosing:
+		return "CurlyClosing"
+	}
+
+	return "undefined"
+}
+
 type Token struct {
 	Tag  int
 	Span string
+}
+
+func (t Token) String() string {
+	return fmt.Sprintf("<%s> [%s]", tagToStr(t.Tag), t.Span)
 }
 
 func NextToken(input string) (Token, string, error) {

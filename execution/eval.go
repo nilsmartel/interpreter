@@ -40,6 +40,9 @@ func callFunction(env *Env, f *value.Function, args []value.Object) (value.Objec
 }
 
 func Eval(env *Env, expr ast.Expression) (value.Object, error) {
+	if c, ok := expr.(ast.NamedCall); ok {
+		println(c.Function)
+	}
 
 	switch expr := expr.(type) {
 	case *ast.ClassDefinition:
@@ -56,7 +59,7 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 		}
 		return nil, nil
 
-	case *ast.DoFlow:
+	case ast.DoFlow:
 		var r value.Object
 		var err error
 
@@ -115,67 +118,35 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 
 		return r, nil
 
-	case *ast.NamedCall:
+	case ast.NamedCall:
+		return namedCall(env, &expr)
 
-		function, err := env.Get(expr.Function)
-		if err != nil {
-			return nil, err
-		}
-
-		args := make([]value.Object, 0, len(expr.Arguments))
-		for _, arg := range expr.Arguments {
-			value, err := Eval(env, arg)
-			if err != nil {
-				return nil, err
-			}
-
-			args = append(args, value)
-		}
-
-		return call(env, function, args)
-
-	case *ast.Call:
-
-		function, err := Eval(env, expr.Function)
-		if err != nil {
-			return nil, err
-		}
-
-		args := make([]value.Object, 0, len(expr.Arguments))
-		for _, arg := range expr.Arguments {
-			value, err := Eval(env, arg)
-			if err != nil {
-				return nil, err
-			}
-
-			args = append(args, value)
-		}
-
-		return call(env, function, args)
+	case ast.Call:
+		return callExpr(env, expr)
 
 	// Literals
-	case *ast.IdentLiteral:
+	case ast.IdentLiteral:
 		return env.Get(expr.Value)
 
-	case *ast.BoolLiteral:
+	case ast.BoolLiteral:
 		return value.NewBool(expr.Value), nil
 
-	case *ast.NilLiteral:
+	case ast.NilLiteral:
 		return value.Nil(), nil
 
-	case *ast.IntLiteral:
+	case ast.IntLiteral:
 		return value.NewInt(expr.Value), nil
 
-	case *ast.FloatLiteral:
+	case ast.FloatLiteral:
 		return value.NewFloat(expr.Value), nil
 
-	case *ast.StringLiteral:
+	case ast.StringLiteral:
 		return value.NewString(expr.Value), nil
 
-	case *ast.LambdaLiteral:
+	case ast.LambdaLiteral:
 		return value.NewFunction(expr.Arguments, expr.Body)
 
-	case *ast.ArrayLiteral:
+	case ast.ArrayLiteral:
 		values := make([]value.Object, 0, len(expr.Values))
 		for _, expr := range expr.Values {
 			v, err := Eval(env, expr)
@@ -188,7 +159,7 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 		return value.NewArray(values...), nil
 
 	// (let x y body)
-	case *ast.VariableDefiniton:
+	case ast.VariableDefiniton:
 		// first evaluate variable assignment
 		val, err := Eval(env, expr.Value)
 		if err != nil {
@@ -201,7 +172,45 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 		})
 	}
 
-	return nil, errors.New("unknown expression encountered")
+	return nil, errors.New("unknown expression encountered: " + fmt.Sprintf("%+v", expr))
+}
+
+func callExpr(env *Env, expr ast.Call) (value.Object, error) {
+	function, err := Eval(env, expr.Function)
+	if err != nil {
+		return nil, err
+	}
+
+	args := make([]value.Object, 0, len(expr.Arguments))
+	for _, arg := range expr.Arguments {
+		value, err := Eval(env, arg)
+		if err != nil {
+			return nil, err
+		}
+
+		args = append(args, value)
+	}
+
+	return call(env, function, args)
+}
+
+func namedCall(env *Env, expr *ast.NamedCall) (value.Object, error) {
+	function, err := env.Get(expr.Function)
+	if err != nil {
+		return nil, err
+	}
+
+	args := make([]value.Object, 0, len(expr.Arguments))
+	for _, arg := range expr.Arguments {
+		value, err := Eval(env, arg)
+		if err != nil {
+			return nil, err
+		}
+
+		args = append(args, value)
+	}
+
+	return call(env, function, args)
 }
 
 func defineClass(env *Env, def *ast.ClassDefinition) error {

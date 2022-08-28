@@ -2,6 +2,18 @@
 
 ## Language
 
+## Arrays
+
+operations work like in numpy.
+
+dont forget:
+    (get a (> a 1))
+    where a is an array
+    and (> a 1) is an array of booleans
+
+later: maybe typed arrays make a lot of sense
+
+
 ### Function Overloading
 using match
 

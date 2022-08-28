@@ -16,10 +16,10 @@ func Parse(tokens []Token) (ast.Expression, []Token, error) {
 		ts = append(ts, t)
 	}
 
-	return ParseCleaned(ts)
+	return parse(ts)
 }
 
-func ParseCleaned(tokens []Token) (ast.Expression, []Token, error) {
+func parse(tokens []Token) (ast.Expression, []Token, error) {
 	if len(tokens) == 0 {
 		return nil, tokens, Expected{Candidates: "<expr>"}
 	}
@@ -55,7 +55,7 @@ func ParseCleaned(tokens []Token) (ast.Expression, []Token, error) {
 		return nil, nil, errors.New("unexpected end of input")
 	}
 
-	return nil, nil, errors.New("should be unreachable")
+	return nil, nil, errors.New("should be unreachable. got")
 }
 
 func parseArray(tokens []Token) (ast.Expression, []Token, error) {
@@ -135,7 +135,7 @@ func parseList(tokens []Token, closingTag int, expectedClosing string) ([]ast.Ex
 	exprs := make([]ast.Expression, 0)
 
 	for len(tokens) > 0 && tokens[0].Tag != closingTag {
-		expr, rest, err := ParseCleaned(tokens)
+		expr, rest, err := parse(tokens)
 		if err != nil {
 			return nil, nil, err
 		}

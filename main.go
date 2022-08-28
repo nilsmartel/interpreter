@@ -1,5 +1,9 @@
 package main
 
+// All that is writte here is mainly code ment to test out the interpreter.
+// This does not mean to serve as a main to be taken serious.
+// This is a playground.
+
 import (
 	"fmt"
 	"interpreter/execution"
@@ -29,7 +33,7 @@ func main() {
 	// TODO populate env with defaults
 	buildin(env)
 
-	ast, rest, err := parsing.ParseCleaned(tokens)
+	ast, rest, err := parsing.Parse(tokens)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
