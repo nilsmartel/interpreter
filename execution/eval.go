@@ -40,10 +40,6 @@ func callFunction(env *Env, f *value.Function, args []value.Object) (value.Objec
 }
 
 func Eval(env *Env, expr ast.Expression) (value.Object, error) {
-	if c, ok := expr.(ast.NamedCall); ok {
-		println(c.Function)
-	}
-
 	switch expr := expr.(type) {
 	case *ast.ClassDefinition:
 		err := defineClass(env, expr)
