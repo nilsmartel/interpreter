@@ -66,7 +66,7 @@ func buildin(env *execution.Env) {
 	env.DefineGlobal("true", value.NewBool(true))
 	env.DefineGlobal("false", value.NewBool(false))
 
-	env.DefineGlobal("println", value.NewNativeFunction(func(o []value.Object) (value.Object, error) {
+	env.DefineGlobal("print", value.NewNativeFunction(func(o []value.Object) (value.Object, error) {
 		for _, obj := range o {
 			fmt.Print(obj.Str())
 		}
