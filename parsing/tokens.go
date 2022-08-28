@@ -10,6 +10,8 @@ const (
 	String
 
 	Heart
+	Class
+	Fun
 
 	ParenOpen
 	ParenClosing
@@ -36,6 +38,10 @@ func tagToStr(tag int) string {
 		return "String"
 	case Heart:
 		return "Heart"
+	case Class:
+		return "Class"
+	case Fun:
+		return "Fun"
 	case ParenOpen:
 		return "ParenOpen"
 	case ParenClosing:
@@ -112,7 +118,14 @@ func NextToken(input string) (Token, string, error) {
 
 	// must be an identifier
 	ident, rest := takeIdent(input)
-	return Token{Tag: Identifier, Span: ident}, rest, nil
+	tag := Identifier
+	if ident == "class" {
+		tag = Class
+	}
+	if ident == "fun" {
+		tag = Fun
+	}
+	return Token{Tag: tag, Span: ident}, rest, nil
 }
 
 func Tokenize(input string) ([]Token, error) {
