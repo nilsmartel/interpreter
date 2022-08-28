@@ -1,1 +1,1 @@
-(if true (println (str "hello "  "world " 78)) (println "this should never be here"))
+(if true (print (str "hello "  "world " 78)) (print "this should never be here"))

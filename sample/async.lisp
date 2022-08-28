@@ -3,7 +3,7 @@
 
 (let x (<3 do-something 8)
   (let multi (+ (.. x) (do-something 9))
-    (println multi))
+    (print multi))
 
 ; should print 33
 ; expected output: 33
