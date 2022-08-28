@@ -60,7 +60,7 @@ func (e *Env) LetIn(ident string, value value.Object, f func(e *Env) (value.Obje
 /// Define defines a new variable in local scope
 func (e *Env) SetLocal(ident string, value value.Object) error {
 	if set, ok := e.locals[ident]; ok && set != nil {
-		return errors.New(fmt.Sprint("local variable", ident, "already defined"))
+		return errors.New(fmt.Sprint("local variable ", ident, " already defined"))
 	}
 
 	e.locals[ident] = value
@@ -78,7 +78,7 @@ func (e *Env) Set(ident string, value value.Object) error {
 		return nil
 	}
 
-	return errors.New(fmt.Sprint("attempting to assign to undefined variable", ident))
+	return errors.New(fmt.Sprint("attempting to assign to undefined variable ", ident))
 }
 
 func (e *Env) Get(ident string) (value.Object, error) {
@@ -90,5 +90,5 @@ func (e *Env) Get(ident string) (value.Object, error) {
 		return val, nil
 	}
 
-	return nil, errors.New(fmt.Sprint("reading undefined variable", ident))
+	return nil, errors.New(fmt.Sprint("reading undefined variable ", ident))
 }
