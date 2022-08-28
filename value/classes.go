@@ -3,15 +3,17 @@ package value
 import (
 	"errors"
 	"fmt"
+	"interpreter/ast"
 )
 
 type ClassInfo struct {
 	name     string
 	size     int
 	fieldIds map[string]int
+	methods  map[string](ast.Expression)
 }
 
-func NewClassInfo(name string, fields []string) (ClassInfo, error) {
+func NewClassInfo(name string, fields []string, methods map[string]ast.Expression) (ClassInfo, error) {
 	size := len(fields)
 
 	fieldIds := make(map[string]int, size)
@@ -24,7 +26,7 @@ func NewClassInfo(name string, fields []string) (ClassInfo, error) {
 		fieldIds[ident] = index
 	}
 
-	return ClassInfo{name, size, fieldIds}, nil
+	return ClassInfo{name, size, fieldIds, methods}, nil
 }
 
 func (c *ClassInfo) MakeInstance(values []Object) (Object, error) {
@@ -54,6 +56,14 @@ func (c *Class) Boolean() bool {
 
 func (c *Class) Class() string {
 	return c.info.name
+}
+
+func (c *Class) Method(ident string) (ast.Expression, error) {
+	if fn, ok := c.info.methods[ident]; ok {
+		return fn, nil
+	}
+
+	return nil, errors.New("no method " + ident + " on class " + c.info.name)
 }
 
 func (c *Class) Get(ident string) (Object, error) {
