@@ -191,11 +191,7 @@ func callExpr(env *Env, expr ast.Call) (value.Object, error) {
 }
 
 func namedCall(env *Env, expr *ast.NamedCall) (value.Object, error) {
-	function, err := env.Get(expr.Function)
-	if err != nil {
-		return nil, err
-	}
-
+	// Evaluate arguments
 	args := make([]value.Object, 0, len(expr.Arguments))
 	for _, arg := range expr.Arguments {
 		value, err := Eval(env, arg)
@@ -206,11 +202,39 @@ func namedCall(env *Env, expr *ast.NamedCall) (value.Object, error) {
 		args = append(args, value)
 	}
 
+	// before calling like a function, check if `expr.Function` is defined as a variable
+	// or Method on first argument
+	if len(args) > 0 {
+		ident := expr.Function
+		switch obj := args[0].(type) {
+		case *value.Class:
+			// property access
+			if v, ok := obj.Get(ident); ok != nil {
+				if len(args) > 1 {
+					return nil, errors.New("can't access property " + ident + " of class " + obj.Class() + " by when call arguments")
+				}
+
+				return v, nil
+			}
+
+			// method call?
+			if m, ok := obj.Method(ident); ok != nil {
+				callFunction(env, &m, args[1:])
+			}
+			// TODO hardcode other cases for buildin functions (e.g. Array.length)
+		}
+	}
+
+	function, err := env.Get(expr.Function)
+	if err != nil {
+		return nil, err
+	}
+
 	return call(env, function, args)
 }
 
 func defineClass(env *Env, def *ast.ClassDefinition) error {
-	classInfo, err := value.NewClassInfo(def.Name, def.Fields)
+	classInfo, err := value.NewClassInfo(def.Name, def.Fields, def.Methods)
 	if err != nil {
 		return err
 	}

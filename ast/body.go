@@ -1,8 +1,9 @@
 package ast
 
 type ClassDefinition struct {
-	Name   string
-	Fields []string
+	Name    string
+	Fields  []string
+	Methods []FunctionDefinition
 }
 
 type FunctionDefinition struct {
