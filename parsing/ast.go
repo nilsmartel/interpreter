@@ -65,14 +65,92 @@ func parseBody(tokens []Token) (ast.Expression, []Token, error) {
 		return nil, nil, errors.New("unexpected end of input")
 	}
 
-	if tokens[0].Tag == Heart {
-		// TODO parse class
+	// (class)
+	if tokens[0].Tag == Class {
+		name, tokens, err := expect(tokens[1:], Identifier, "<class name>")
+		if err != nil {
+			return nil, nil, err
+		}
+		_, tokens, err = expect(tokens, ParenOpen, "(")
+		if err != nil {
+			return nil, nil, err
+		}
+
+		fields := make([]string, 0)
+		for i, t := range tokens {
+			if t.Tag == Identifier {
+				fields = append(fields, t.Span)
+				continue
+			}
+			if t.Tag == ParenClosing {
+				// advance token list
+				tokens = tokens[i+1:]
+				break
+			}
+			// illegal token encountered
+			return nil, nil, Expected{Candidates: "<ident> )"}
+		}
+
+		methods := make([]ast.FunctionDefinition, 0)
+		for tokens[0].Tag != ParenClosing {
+			_, tokens, err = expect(tokens, Fun, "fun")
+			if err != nil {
+				return nil, nil, Expected{Candidates: ")", or: err.(*Expected)}
+			}
+
+			name, tokens, err = expect(tokens, Identifier, "<ident>")
+			if err != nil {
+				return nil, nil, err
+			}
+
+			_, tokens, err = expect(tokens, ParenOpen, "<ident>")
+			if err != nil {
+				return nil, nil, err
+			}
+
+			args := make([]string, 0)
+			for i, t := range tokens {
+				if t.Tag == Identifier {
+					args = append(args, t.Span)
+					continue
+				}
+				if t.Tag == ParenClosing {
+					tokens = tokens[i+1:]
+					break
+				}
+				return nil, nil, Expected{Candidates: "<ident> )"}
+			}
+
+			_, tokens, err := expect(tokens, ParenClosing, ")")
+			if err != nil {
+				return nil, nil, err
+			}
+			_, tokens, err = expect(tokens, ParenOpen, "(")
+			if err != nil {
+				return nil, nil, err
+			}
+			body, tokens, err := parseExpr(tokens)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			fd := ast.FunctionDefinition{Name: name.Span, Args: args, Body: body}
+			methods = append(methods, fd)
+		}
+
+		_, tokens, err = expect(tokens, ParenClosing, ")")
+		if err != nil {
+			return nil, nil, err
+		}
+
+		return ast.ClassDefinition{Name: name.Span, Fields: fields, Methods: methods}, tokens, nil
 	}
 
+	// (fun)
 	if tokens[0].Tag == Fun && tokens[1].Tag == Identifier {
 		funcName := tokens[1].Span
 
-		tokens, err := expect(tokens, ParenOpen, "(")
+		_, tokens, err := expect(tokens, ParenOpen, "(")
 		if err != nil {
 			return nil, nil, err
 		}
@@ -87,11 +165,11 @@ func parseBody(tokens []Token) (ast.Expression, []Token, error) {
 			}
 		}
 
-		tokens, err = expect(tokens, ParenClosing, ")")
+		_, tokens, err = expect(tokens, ParenClosing, ")")
 		if err != nil {
 			return nil, nil, err
 		}
-		tokens, err = expect(tokens, ParenOpen, "(")
+		_, tokens, err = expect(tokens, ParenOpen, "(")
 		if err != nil {
 			return nil, nil, err
 		}
@@ -107,13 +185,13 @@ func parseBody(tokens []Token) (ast.Expression, []Token, error) {
 	return parseExpr(tokens)
 }
 
-func expect(tokens []Token, tag int, span string) ([]Token, error) {
+func expect(tokens []Token, tag int, expected string) (Token, []Token, error) {
 	if len(tokens) == 0 ||
 		tokens[0].Tag != tag {
-		return nil, Expected{Candidates: span}
+		return Token{}, nil, Expected{Candidates: expected}
 	}
 
-	return tokens[1:], nil
+	return tokens[0], tokens[1:], nil
 }
 
 func parseArray(tokens []Token) (ast.Expression, []Token, error) {
