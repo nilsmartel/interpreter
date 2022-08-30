@@ -27,6 +27,9 @@ func parse(tokens []Token) (ast.Expression, []Token, error) {
 	fst := tokens[0]
 	rest := tokens[1:]
 	switch fst.Tag {
+	case ParenOpen:
+		return parseBody(rest)
+
 	case Identifier:
 		return ast.IdentLiteral{Value: fst.Span}, rest, nil
 	case Int:
@@ -45,9 +48,6 @@ func parse(tokens []Token) (ast.Expression, []Token, error) {
 		value := parseString(fst.Span)
 		return ast.StringLiteral{Value: value}, rest, nil
 
-	case ParenOpen:
-		return parseExpr(rest)
-
 	case BracketOpen:
 		return parseArray(rest)
 
@@ -58,8 +58,66 @@ func parse(tokens []Token) (ast.Expression, []Token, error) {
 	return nil, nil, errors.New("should be unreachable. got")
 }
 
+/// Parses (x y z)
+/// Class and function definitions
+func parseBody(tokens []Token) (ast.Expression, []Token, error) {
+	if len(tokens) < 2 {
+		return nil, nil, errors.New("unexpected end of input")
+	}
+
+	if tokens[0].Tag == Heart {
+		// TODO parse class
+	}
+
+	if tokens[0].Tag == Fun && tokens[1].Tag == Identifier {
+		funcName := tokens[1].Span
+
+		tokens, err := expect(tokens, ParenOpen, "(")
+		if err != nil {
+			return nil, nil, err
+		}
+		// TODO ident ) ( parseExpr
+		args := make([]string, 0)
+		for tokens[0].Tag != Identifier {
+			args = append(args, tokens[0].Span)
+			tokens = tokens[1:]
+
+			if len(tokens) == 0 {
+				return nil, nil, Expected{Candidates: "<argument> )"}
+			}
+		}
+
+		tokens, err = expect(tokens, ParenClosing, ")")
+		if err != nil {
+			return nil, nil, err
+		}
+		tokens, err = expect(tokens, ParenOpen, "(")
+		if err != nil {
+			return nil, nil, err
+		}
+
+		body, rest, err := parseExpr(tokens)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		return ast.FunctionDefinition{Name: funcName, Args: args, Body: body}, rest, nil
+	}
+
+	return parseExpr(tokens)
+}
+
+func expect(tokens []Token, tag int, span string) ([]Token, error) {
+	if len(tokens) == 0 ||
+		tokens[0].Tag != tag {
+		return nil, Expected{Candidates: span}
+	}
+
+	return tokens[1:], nil
+}
+
 func parseArray(tokens []Token) (ast.Expression, []Token, error) {
-	expr, rest, err := parseList(tokens, ParenClosing, ")")
+	expr, rest, err := parseList(tokens, BracketClosing, "]")
 	if err != nil {
 		return nil, rest, err
 	}
@@ -78,7 +136,7 @@ func parseExpr(tokens []Token) (ast.Expression, []Token, error) {
 
 	if len(expr) == 0 {
 		// subs with nil (e.g. do nothing)
-		return ast.NilLiteral{}, rest, nil
+		return nil, nil, errors.New("() is not allowed") // ast.NilLiteral{}, rest, nil
 	}
 
 	if tokens[0].Tag == Heart {
