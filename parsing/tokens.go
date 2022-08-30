@@ -93,11 +93,6 @@ func NextToken(input string) (Token, string, error) {
 		return Token{Tag: CurlyClosing, Span: fst}, rest, nil
 	}
 
-	// check for <3
-	if heart, rest := tagHeart(input); heart != "" {
-		return Token{Tag: Heart, Span: heart}, rest, nil
-	}
-
 	// check if we have whitespace
 	if ws, rest := takeWhitespace(input); ws != "" {
 		return Token{Tag: Whitespace, Span: ws}, rest, nil
@@ -119,11 +114,13 @@ func NextToken(input string) (Token, string, error) {
 	// must be an identifier
 	ident, rest := takeIdent(input)
 	tag := Identifier
-	if ident == "class" {
+	switch ident {
+	case "class":
 		tag = Class
-	}
-	if ident == "fun" {
+	case "fun":
 		tag = Fun
+	case "<3":
+		tag = Heart
 	}
 	return Token{Tag: tag, Span: ident}, rest, nil
 }

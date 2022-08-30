@@ -13,13 +13,6 @@ func call(env *Env, caller value.Object, args []value.Object) (value.Object, err
 		return callFunction(env, caller, args)
 	case *value.NativeFunction:
 		return caller.Call(args)
-		// case *value.Class:
-		// 	c := caller.(*value.Class)
-		// 	f, err := c.Get("call")
-		// 	if err != nil {
-		// 		return nil, errors.New("class " + caller.Class() + " does not defined `call` method and is not callable.")
-		// 	}
-		// 	return call(env, f, args)
 	}
 
 	return nil, errors.New("value of type " + caller.Class() + " is not callable")
