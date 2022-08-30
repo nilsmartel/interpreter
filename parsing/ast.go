@@ -240,11 +240,11 @@ func parseExpr(tokens []Token) (ast.Expression, []Token, error) {
 		case "do":
 			return ast.DoFlow{Statements: expr}, rest, nil
 		case "if":
-			if len(expr) != 2 {
-				return nil, rest, errors.New("expected precisely 2 arguments to if")
+			if len(expr) != 3 {
+				return nil, rest, errors.New("expected precisely 3 arguments to if")
 			}
 
-			return ast.IfFlow{Condition: fst, True: expr[0], False: expr[1]}, rest, nil
+			return ast.IfFlow{Condition: expr[0], True: expr[1], False: expr[2]}, rest, nil
 		case "and":
 			return ast.AndFlow{Arguments: expr}, rest, nil
 		case "or":
