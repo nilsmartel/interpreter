@@ -121,7 +121,7 @@ func parseBody(tokens []Token) (ast.Expression, []Token, error) {
 				return nil, nil, Expected{Candidates: "<ident> )"}
 			}
 
-			_, tokens, err := expect(tokens, ParenClosing, ")")
+			_, tokens, err = expect(tokens, ParenClosing, ")")
 			if err != nil {
 				return nil, nil, err
 			}
@@ -129,7 +129,8 @@ func parseBody(tokens []Token) (ast.Expression, []Token, error) {
 			if err != nil {
 				return nil, nil, err
 			}
-			body, tokens, err := parseExpr(tokens)
+			body, rest, err := parseExpr(tokens)
+			tokens = rest
 			if err != nil {
 				return nil, nil, err
 			}
