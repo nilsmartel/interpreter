@@ -61,7 +61,7 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 
 		return r, nil
 
-	case *ast.IfFlow:
+	case ast.IfFlow:
 
 		res, err := Eval(env, expr.Condition)
 		if err != nil {
@@ -73,7 +73,7 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 		}
 		return Eval(env, expr.False)
 
-	case *ast.OrFlow:
+	case ast.OrFlow:
 		var r value.Object
 		var err error
 
@@ -90,7 +90,7 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 
 		return r, nil
 
-	case *ast.AndFlow:
+	case ast.AndFlow:
 		var r value.Object
 		var err error
 
