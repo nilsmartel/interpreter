@@ -1,9 +1,10 @@
-package value
+package execution
 
 import (
 	"errors"
 	"fmt"
 	"interpreter/ast"
+	"interpreter/value"
 )
 
 type ClassInfo struct {
@@ -39,7 +40,7 @@ func NewClassInfo(name string, fields []string, functions []ast.FunctionDefiniti
 	return ClassInfo{name, size, fieldIds, methods}, nil
 }
 
-func (c *ClassInfo) MakeInstance(values []Object) (Object, error) {
+func (c *ClassInfo) MakeInstance(values []value.Object) (value.Object, error) {
 	if len(values) != c.size {
 		return nil, errors.New(fmt.Sprint(
 			"failed to create instance of class",
@@ -56,7 +57,7 @@ func (c *ClassInfo) MakeInstance(values []Object) (Object, error) {
 }
 
 type Class struct {
-	fields []Object
+	fields []value.Object
 	info   *ClassInfo
 }
 
@@ -76,7 +77,7 @@ func (c *Class) Method(ident string) (Function, error) {
 	return Function{}, errors.New("no method " + ident + " on class " + c.info.name)
 }
 
-func (c *Class) Get(ident string) (Object, error) {
+func (c *Class) Get(ident string) (value.Object, error) {
 	if id, ok := c.info.fieldIds[ident]; ok {
 		return c.fields[id], nil
 	}
@@ -85,7 +86,7 @@ func (c *Class) Get(ident string) (Object, error) {
 }
 
 // TODO this is the place to do final fields
-func (c *Class) Set(ident string, value Object) error {
+func (c *Class) Set(ident string, value value.Object) error {
 	if id, ok := c.info.fieldIds[ident]; ok {
 		c.fields[id] = value
 		return nil

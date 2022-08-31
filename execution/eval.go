@@ -9,16 +9,16 @@ import (
 
 func call(env *Env, caller value.Object, args []value.Object) (value.Object, error) {
 	switch caller := caller.(type) {
-	case *value.Function:
+	case *Function:
 		return callFunction(env, caller, args)
-	case *value.NativeFunction:
+	case *NativeFunction:
 		return caller.Call(args)
 	}
 
 	return nil, errors.New("value of type " + caller.Class() + " is not callable")
 }
 
-func callFunction(env *Env, f *value.Function, args []value.Object) (value.Object, error) {
+func callFunction(env *Env, f *Function, args []value.Object) (value.Object, error) {
 	if len(args) != len(f.Args) {
 		return nil, errors.New(fmt.Sprint("called function with", len(args), "arguments, expected", len(f.Args)))
 	}
@@ -133,7 +133,9 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 		return value.NewString(expr.Value), nil
 
 	case ast.LambdaLiteral:
-		return value.NewFunction(expr.Arguments, expr.Body)
+		// TODO we actually really want to capture the env
+		// at this point
+		return NewFunction(expr.Arguments, expr.Body)
 
 	case ast.ArrayLiteral:
 		values := make([]value.Object, 0, len(expr.Values))
@@ -195,29 +197,6 @@ func namedCall(env *Env, expr *ast.NamedCall) (value.Object, error) {
 		args = append(args, value)
 	}
 
-	// before calling like a function, check if `expr.Function` is defined as a variable
-	// or Method on first argument
-	if len(args) > 0 {
-		ident := expr.Function
-		switch obj := args[0].(type) {
-		case *value.Class:
-			// property access
-			if v, ok := obj.Get(ident); ok != nil {
-				if len(args) > 1 {
-					return nil, errors.New("can't access property " + ident + " of class " + obj.Class() + " by when call arguments")
-				}
-
-				return v, nil
-			}
-
-			// method call?
-			if m, ok := obj.Method(ident); ok != nil {
-				callFunction(env, &m, args[1:])
-			}
-			// TODO hardcode other cases for buildin functions (e.g. Array.length)
-		}
-	}
-
 	function, err := env.Get(expr.Function)
 	if err != nil {
 		return nil, err
@@ -227,12 +206,12 @@ func namedCall(env *Env, expr *ast.NamedCall) (value.Object, error) {
 }
 
 func defineClass(env *Env, def *ast.ClassDefinition) error {
-	classInfo, err := value.NewClassInfo(def.Name, def.Fields, def.Methods)
+	classInfo, err := NewClassInfo(def.Name, def.Fields, def.Methods)
 	if err != nil {
 		return err
 	}
 
-	constructor := value.NewNativeFunction(classInfo.MakeInstance)
+	constructor := NewNativeFunction(classInfo.MakeInstance)
 
 	env.DefineGlobal(def.Name, constructor)
 	return nil
@@ -241,7 +220,7 @@ func defineClass(env *Env, def *ast.ClassDefinition) error {
 func defineFunc(env *Env, def *ast.FunctionDefinition) error {
 	// TODO this is the spot to include information about codeposition in file, row, col
 	// for stacktraces etc.
-	function, err := value.NewFunction(def.Args, def.Body)
+	function, err := NewFunction(def.Args, def.Body)
 	if err != nil {
 		return err
 	}

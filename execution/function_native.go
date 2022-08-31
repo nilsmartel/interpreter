@@ -1,14 +1,16 @@
-package value
+package execution
+
+import "interpreter/value"
 
 type NativeFunction struct {
-	fn func([]Object) (Object, error)
+	fn func([]value.Object) (value.Object, error)
 }
 
-func NewNativeFunction(fn func([]Object) (Object, error)) *NativeFunction {
+func NewNativeFunction(fn func([]value.Object) (value.Object, error)) *NativeFunction {
 	return &NativeFunction{fn}
 }
 
-func (f *NativeFunction) Call(values []Object) (Object, error) {
+func (f *NativeFunction) Call(values []value.Object) (value.Object, error) {
 	return f.fn(values)
 }
 
