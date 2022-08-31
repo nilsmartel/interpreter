@@ -3,19 +3,19 @@ package execution
 import "interpreter/value"
 
 type NativeFunction struct {
-	fn func([]value.Object) (value.Object, error)
+	fn func(*Env, []value.Object) (value.Object, error)
 }
 
-func NewNativeFunction(fn func([]value.Object) (value.Object, error)) *NativeFunction {
+func NewNativeFunction(fn func(*Env, []value.Object) (value.Object, error)) *NativeFunction {
 	return &NativeFunction{fn}
 }
 
-func (f *NativeFunction) Call(values []value.Object) (value.Object, error) {
-	return f.fn(values)
+func (f *NativeFunction) Call(env *Env, args []value.Object) (value.Object, error) {
+	return f.fn(env, args)
 }
 
 func (f *NativeFunction) Str() string {
-	return ":native code:"
+	return "(native code)"
 }
 
 func (i *NativeFunction) Class() string {

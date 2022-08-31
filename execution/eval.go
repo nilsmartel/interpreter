@@ -9,27 +9,11 @@ import (
 
 func call(env *Env, caller value.Object, args []value.Object) (value.Object, error) {
 	switch caller := caller.(type) {
-	case *Function:
-		return callFunction(env, caller, args)
-	case *NativeFunction:
-		return caller.Call(args)
+	case Callable:
+		return caller.call(env, args)
 	}
 
 	return nil, errors.New("value of type " + caller.Class() + " is not callable")
-}
-
-func callFunction(env *Env, f *Function, args []value.Object) (value.Object, error) {
-	if len(args) != len(f.Args) {
-		return nil, errors.New(fmt.Sprint("called function with", len(args), "arguments, expected", len(f.Args)))
-	}
-
-	env = env.NewScope()
-	for i, ident := range f.Args {
-		// after calling new scope the error cant be null
-		_ = env.Set(ident, args[i])
-	}
-
-	return Eval(env, f.Body)
 }
 
 func Eval(env *Env, expr ast.Expression) (value.Object, error) {

@@ -40,7 +40,7 @@ func NewClassInfo(name string, fields []string, functions []ast.FunctionDefiniti
 	return ClassInfo{name, size, fieldIds, methods}, nil
 }
 
-func (c *ClassInfo) MakeInstance(values []value.Object) (value.Object, error) {
+func (c *ClassInfo) MakeInstance(env *Env, values []value.Object) (value.Object, error) {
 	if len(values) != c.size {
 		return nil, errors.New(fmt.Sprint(
 			"failed to create instance of class",
