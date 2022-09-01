@@ -14,17 +14,17 @@ func (f *NativeFunction) Call(env *Env, args []value.Object) (value.Object, erro
 	return f.fn(env, args)
 }
 
-func (f *NativeFunction) Str() string {
-	return "(native code)"
-}
+// func (f *NativeFunction) Str() string {
+// 	return "(native code)"
+// }
 
-func (i *NativeFunction) Class() string {
-	return "Native Function"
-}
+// func (i *NativeFunction) Class() string {
+// 	return "Native Function"
+// }
 
-func (c *NativeFunction) Boolean() bool {
-	return true
-}
+// func (c *NativeFunction) Boolean() bool {
+// 	return true
+// }
 
 // TODO Native functions to be included
 
