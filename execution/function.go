@@ -3,7 +3,12 @@ package execution
 /// Function is an overloaded Function
 
 type Function struct {
-	overloadings map[[]ClassInfo]Callable
+	overloadings []PatternMatch
+}
+
+type PatternMatch struct {
+	pattern  Pattern
+	function Callable
 }
 
 func (f *Function) Str() string {
