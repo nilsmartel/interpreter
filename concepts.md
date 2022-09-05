@@ -87,7 +87,7 @@ Constants do not count as variables, so that we do not have to bother with them 
 
     (fun matches (a: Arg, o: value.Object): Maybe Map(Identifier, value.Object), (...))
 
-    type Arg := Constant | Variable
+    type Arg := Constant | Variable | Array
     type Constant := Nil | Bool | Int | Float | ConstString
 
 Easy to compare in match arms so far!
@@ -97,7 +97,9 @@ Either a Binding (e.g. `x in (0 1 2 3)`) to constants, or a type.
 
     type Variable
     - identifier String
-    - type       ClassId | []Constant | none
+    # one hot encoded
+    - type       ClassId?
+    - binding    []Constant?
 
 That is fairly easy to compare as well still. Very nice.
 
@@ -108,7 +110,7 @@ Futhermore an array can hold their remaining arguments.
 
     type Array
     - args []Arg
-    - rest bool
+    - rest string?
 
 ## Repl
 
