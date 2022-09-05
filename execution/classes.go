@@ -11,7 +11,7 @@ type ClassInfo struct {
 	name     string
 	size     int
 	fieldIds map[string]int
-	methods  map[string](concreteFunction)
+	methods  map[string](bytecodeFunction)
 }
 
 func NewClassInfo(name string, fields []string, functions []ast.FunctionDefinition) (ClassInfo, error) {
@@ -27,14 +27,14 @@ func NewClassInfo(name string, fields []string, functions []ast.FunctionDefiniti
 		fieldIds[ident] = index
 	}
 
-	methods := make(map[string]concreteFunction)
+	methods := make(map[string]bytecodeFunction)
 
 	for _, f := range functions {
 		if _, ok := fieldIds[f.Name]; ok {
 			return ClassInfo{}, errors.New(f.Name + "cant be both a field and a method on class" + name)
 		}
 
-		methods[f.Name] = concreteFunction{Args: f.Args, Body: f.Body}
+		methods[f.Name] = bytecodeFunction{Args: f.Args, Body: f.Body}
 	}
 
 	return ClassInfo{name, size, fieldIds, methods}, nil
@@ -69,12 +69,12 @@ func (c *Class) Class() string {
 	return c.info.name
 }
 
-func (c *Class) Method(ident string) (concreteFunction, error) {
+func (c *Class) Method(ident string) (bytecodeFunction, error) {
 	if fn, ok := c.info.methods[ident]; ok {
 		return fn, nil
 	}
 
-	return concreteFunction{}, errors.New("no method " + ident + " on class " + c.info.name)
+	return bytecodeFunction{}, errors.New("no method " + ident + " on class " + c.info.name)
 }
 
 func (c *Class) Get(ident string) (value.Object, error) {

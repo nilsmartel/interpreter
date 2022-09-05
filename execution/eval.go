@@ -119,7 +119,8 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 	case ast.LambdaLiteral:
 		// TODO we actually really want to capture the env
 		// at this point
-		return NewFunction(expr.Arguments, expr.Body)
+		f, err := NewFunction(expr.Arguments, expr.Body)
+		return &f, err
 
 	case ast.ArrayLiteral:
 		values := make([]value.Object, 0, len(expr.Values))

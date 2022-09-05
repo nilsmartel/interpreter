@@ -7,27 +7,27 @@ import (
 	"interpreter/value"
 )
 
-type concreteFunction struct {
+type bytecodeFunction struct {
 	// optional variadic arguments are a nice thing to have
 	// VarArg string
 	Args []string
 	Body ast.Expression
 }
 
-func NewFunction(arguments []string, body ast.Expression) (concreteFunction, error) {
+func NewFunction(arguments []string, body ast.Expression) (bytecodeFunction, error) {
 	setArgs := make(map[string]bool, len(arguments))
 	for _, ident := range arguments {
 		if setArgs[ident] {
-			return concreteFunction{}, errors.New("attempting to define multiple variables as " + ident)
+			return bytecodeFunction{}, errors.New("attempting to define multiple variables as " + ident)
 		}
 
 		setArgs[ident] = true
 	}
 
-	return concreteFunction{arguments, body}, nil
+	return bytecodeFunction{arguments, body}, nil
 }
 
-func (f *concreteFunction) Call(env *Env, args []value.Object) (value.Object, error) {
+func (f *bytecodeFunction) Call(env *Env, args []value.Object) (value.Object, error) {
 	if len(args) != len(f.Args) {
 		return nil, errors.New(fmt.Sprint("called function with", len(args), "arguments, expected", len(f.Args)))
 	}
