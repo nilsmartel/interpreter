@@ -2,6 +2,16 @@
 
 ## Language
 
+## Methods
+
+All methods (and field accesses) will be compiled to global methods.
+
+### Order of Functions
+
+any function `fun x (a b)` where no type information is present,
+or any other restriction, will be evaluated last.
+
+
 ## Arrays
 
 operations work like in numpy.
