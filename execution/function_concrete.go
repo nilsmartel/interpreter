@@ -8,6 +8,10 @@ import (
 )
 
 type bytecodeFunction struct {
+	// Note, these are not actually bytecode functions.
+	// they are evaulated using a tree walking interpreter, which is different.
+	// I had a hard time coming up with a better name.
+
 	// optional variadic arguments are a nice thing to have
 	// VarArg string
 	Args []string
