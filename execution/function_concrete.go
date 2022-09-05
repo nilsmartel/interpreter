@@ -14,17 +14,17 @@ type concreteFunction struct {
 	Body ast.Expression
 }
 
-func NewFunction(arguments []string, body ast.Expression) (*concreteFunction, error) {
+func NewFunction(arguments []string, body ast.Expression) (concreteFunction, error) {
 	setArgs := make(map[string]bool, len(arguments))
 	for _, ident := range arguments {
 		if setArgs[ident] {
-			return nil, errors.New("attempting to define multiple variables as " + ident)
+			return concreteFunction{}, errors.New("attempting to define multiple variables as " + ident)
 		}
 
 		setArgs[ident] = true
 	}
 
-	return &concreteFunction{arguments, body}, nil
+	return concreteFunction{arguments, body}, nil
 }
 
 func (f *concreteFunction) Call(env *Env, args []value.Object) (value.Object, error) {
