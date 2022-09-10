@@ -1,11 +1,11 @@
 package value
 
 type Array struct {
-	values []Object
+	Values []Object
 }
 
 func NewArray(values ...Object) Object {
-	return &Array{values}
+	return &Array{Values: values}
 }
 
 func (a *Array) Boolean() bool {
@@ -14,7 +14,7 @@ func (a *Array) Boolean() bool {
 
 func (a *Array) Str() string {
 	s := "["
-	for _, v := range a.values {
+	for _, v := range a.Values {
 		s += " " + v.Str()
 	}
 	return s + "]"

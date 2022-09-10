@@ -11,7 +11,6 @@ All methods (and field accesses) will be compiled to global methods.
 any function `fun x (a b)` where no type information is present,
 or any other restriction, will be evaluated last.
 
-
 ## Arrays
 
 operations work like in numpy.
@@ -23,12 +22,11 @@ dont forget:
 
 later: maybe typed arrays make a lot of sense
 
-
 ### Function Overloading
+
 using match
 
 instead of specifying names of arguments, one can simply capture using match arms
-
 
 e.g.
 
@@ -129,50 +127,48 @@ Futhermore an array can hold their remaining arguments.
   - if no input is entered (e.g. input : trim : empty) hide input window
 
 - typing <enter>:
-    - if input : tokens : len : == 1
+  - if input : tokens : len : == 1
         user probably wants to display a variable
         so evaluate expression and print it (Eval(expr).Str())
-    - else
+  - else
         probably not a full expression
         enter new line to input window.
 
 - typing `)`
-    - if input does not start with ')'
+  - if input does not start with ')'
         wrap input (e.g. `...input` => `(...input)`)
-    - if open parens > closed brackets
+  - if open parens > closed brackets
         => insert bracket accordingly / intellignetly
             if latestopen == '(' => ')'
                               [  =>  ]
                               {  =>  }
 
-
 - when typing `;` transform
-    - `(x...;...y` => (do x... ) ...y` (y is likely the empty-string)
-    - `x...;...y` => (do x... ) ...y`
+  - `(x...;...y` => (do x... ) ...y` (y is likely the empty-string)
+  - `x...;...y` => (do x... ) ...y`
 
 - stout of commands:
-    - indented 2 spaces
-    - first line of output starts with >
-    - clicking on `>` will hide output, transform `>` into `o`
-    - clicking on `o` will show output, transform `o` into `>`
-    - clicking on output will open dialog to save output into variable
+  - indented 2 spaces
+  - first line of output starts with >
+  - clicking on `>` will hide output, transform `>` into `o`
+  - clicking on `o` will show output, transform `o` into `>`
+  - clicking on output will open dialog to save output into variable
 
 - every shell command: output to stdout AND return stdout as a string
-    - the string is `stdout :filter isprintable : tostring` to enable proper color output while keeping strings sane
-    -
+  - the string is `stdout :filter isprintable : tostring` to enable proper color output while keeping strings sane
+  -
 
 - when executing shell commands:
-    - current global and local variables are made into the environment variables
-    - classes are json'ized maybe ?
+  - current global and local variables are made into the environment variables
+  - classes are json'ized maybe ?
 
 - when opening shell
-    - current envs are stored into variables
-    - if jsonable -> json them maybe? lets see how this goes
-
+  - current envs are stored into variables
+  - if jsonable -> json them maybe? lets see how this goes
 
 ### Differences to solar
-notes for later
 
+notes for later
 
     fun matches (arg, more) Int = arg : splice (first more)
 
