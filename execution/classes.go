@@ -34,7 +34,7 @@ func NewClassInfo(name string, fields []string, functions []ast.FunctionDefiniti
 			return ClassInfo{}, errors.New(f.Name + "cant be both a field and a method on class" + name)
 		}
 
-		methods[f.Name] = bytecodeFunction{Args: f.Args, Body: f.Body}
+		methods[f.Name] = bytecodeFunction{Body: f.Body}
 	}
 
 	return ClassInfo{name, size, fieldIds, methods}, nil
