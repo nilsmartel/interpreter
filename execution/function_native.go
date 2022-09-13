@@ -10,7 +10,7 @@ func NewNativeFunction(fn func(*Env, []value.Object) (value.Object, error)) *Nat
 	return &NativeFunction{fn}
 }
 
-func (f *NativeFunction) Call(env *Env, args []value.Object) (value.Object, error) {
+func (f *NativeFunction) call(env *Env, args []value.Object) (value.Object, error) {
 	return f.fn(env, args)
 }
 

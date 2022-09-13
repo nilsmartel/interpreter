@@ -5,9 +5,16 @@ import "fmt"
 const (
 	Identifier = iota
 
+	Bool
 	Int
 	Float
 	String
+
+	In
+
+	Dot
+
+	TypeColon
 
 	Heart
 	Class
@@ -91,6 +98,10 @@ func NextToken(input string) (Token, string, error) {
 		return Token{Tag: CurlyOpen, Span: fst}, rest, nil
 	case "}":
 		return Token{Tag: CurlyClosing, Span: fst}, rest, nil
+	case ".":
+		return Token{Tag: Dot, Span: fst}, rest, nil
+	case ":":
+		return Token{Tag: TypeColon, Span: fst}, rest, nil
 	}
 
 	// check if we have whitespace
@@ -121,6 +132,12 @@ func NextToken(input string) (Token, string, error) {
 		tag = Fun
 	case "<3":
 		tag = Heart
+	case "in":
+		tag = In
+	case "true":
+		tag = Bool
+	case "false":
+		tag = Bool
 	}
 	return Token{Tag: tag, Span: ident}, rest, nil
 }

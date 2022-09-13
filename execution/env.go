@@ -18,6 +18,13 @@ func NewEnv() *Env {
 	return &Env{globals: make(map[string]value.Object), locals: make(map[string]value.Object)}
 }
 
+func (e *Env) NewScopeFrom(locals map[string]value.Object) *Env {
+	return &Env{
+		globals: e.globals,
+		locals:  locals,
+	}
+}
+
 func (e *Env) NewScope() *Env {
 	return &Env{
 		globals: e.globals,
