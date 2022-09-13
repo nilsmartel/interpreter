@@ -17,7 +17,7 @@ type bytecodeFunction struct {
 	Body ast.Expression
 }
 
-func NewFunction(arguments []string, body ast.Expression) (fun, error) {
+func NewFunction(arguments []string, body ast.Expression) (bytecodeFunction, error) {
 	setArgs := make(map[string]bool, len(arguments))
 	for _, ident := range arguments {
 		if setArgs[ident] {
