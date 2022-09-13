@@ -1,7 +1,6 @@
-package parsing_test
+package tokens
 
 import (
-	"interpreter/parsing"
 	"strings"
 	"testing"
 )
@@ -10,7 +9,7 @@ func template(s string) []string {
 	return strings.Split(s, ",")
 }
 
-func strOfTokens(t []parsing.Token) []string {
+func strOfTokens(t []Token) []string {
 	s := make([]string, 0, len(t))
 
 	for _, token := range t {
@@ -46,7 +45,7 @@ func TestTokenization(t *testing.T) {
 		input := c[0]
 		expected := template(c[1])
 
-		tokens, err := parsing.Tokenize(input)
+		tokens, err := Tokenize(input)
 
 		if err != nil {
 			t.Error("unexpected error while pasing", err)
