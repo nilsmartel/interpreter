@@ -12,6 +12,8 @@
 
 ### Parser for functions
 
+    (fun xyz /(<args>) <expr>/+)
+
     (fun xyz (<args>) <expr>)
 
     args := <arg> (..<ident>)?
