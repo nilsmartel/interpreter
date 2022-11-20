@@ -11,10 +11,22 @@ type Function struct {
 	overloadings []PatternMatch
 }
 
+func NewFunction(function Callable, pattern Pattern) Function {
+	return Function{
+		overloadings: []PatternMatch{
+			{
+				pattern,
+				function,
+			},
+		},
+	}
+}
+
 func (f *Function) call(env *Env, args []value.Object) (value.Object, error) {
 	for _, fun := range f.overloadings {
 		m, err := fun.pattern.matches(args)
 		if err != nil {
+			// TODO we are interested in these errors, save them
 			continue
 		}
 

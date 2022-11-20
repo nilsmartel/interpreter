@@ -32,6 +32,22 @@ func (e *Env) NewScope() *Env {
 	}
 }
 
+func (e *Env) DefineGlobalFunction(ident string, fn Callable, pattern Pattern) error {
+	if obj, ok := e.globals[ident]; ok {
+		// Overload method on objects
+		if callable, ok := obj.(*Function); ok {
+			// TODO order of overloadings should matter
+			// and be more consistent, I think
+			callable.overloadings = append(callable.overloadings, PatternMatch{function: fn, pattern: pattern})
+		}
+		return errors.New(obj.Class() + " can't be overloaded as a function")
+	}
+
+	f := NewFunction(fn, pattern)
+	e.globals[ident] = &f
+	return nil
+}
+
 func (e *Env) DefineGlobal(ident string, value value.Object) error {
 	if _, ok := e.globals[ident]; ok {
 		return errors.New(fmt.Sprint(ident, "already defined"))

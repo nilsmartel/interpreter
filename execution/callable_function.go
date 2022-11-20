@@ -17,7 +17,7 @@ type bytecodeFunction struct {
 	Body ast.Expression
 }
 
-func NewFunction(arguments []string, body ast.Expression) (bytecodeFunction, error) {
+func NewBytecodeFunction(arguments []string, body ast.Expression) (bytecodeFunction, error) {
 	setArgs := make(map[string]bool, len(arguments))
 	for _, ident := range arguments {
 		if setArgs[ident] {
@@ -30,18 +30,6 @@ func NewFunction(arguments []string, body ast.Expression) (bytecodeFunction, err
 	return bytecodeFunction{body}, nil
 }
 
-func (f *bytecodeFunction) call(env *Env) (value.Object, error) {
+func (f *bytecodeFunction) call(env *Env, args []value.Object) (value.Object, error) {
 	return Eval(env, f.Body)
 }
-
-// func (f *concreteFunction) Boolean() bool {
-// 	return true
-// }
-
-// func (f *concreteFunction) Str() string {
-// 	return "(fun [...] ...)"
-// }
-
-// func (f *concreteFunction) Class() string {
-// 	return "Function"
-// }

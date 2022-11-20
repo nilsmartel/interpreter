@@ -119,7 +119,7 @@ func Eval(env *Env, expr ast.Expression) (value.Object, error) {
 	case ast.LambdaLiteral:
 		// TODO we actually really want to capture the env
 		// at this point
-		f, err := NewFunction(expr.Arguments, expr.Body)
+		f, err := NewBytecodeFunction(expr.Arguments, expr.Body)
 		return &f, err
 
 	case ast.ArrayLiteral:
@@ -196,19 +196,22 @@ func defineClass(env *Env, def *ast.ClassDefinition) error {
 		return err
 	}
 
+	// The constructor of a class is a native function,
+	// that gets designed only once.
 	constructor := NewNativeFunction(classInfo.MakeInstance)
 
-	env.DefineGlobal(def.Name, constructor)
+	env.DefineGlobalFunction(def.Name, constructor, &FullUntyped{args: def.Fields})
 	return nil
 }
 
 func defineFunc(env *Env, def *ast.FunctionDefinition) error {
 	// TODO this is the spot to include information about codeposition in file, row, col
 	// for stacktraces etc.
-	function, err := NewFunction(def.Args, def.Body)
+	bytecodeFunc, err := NewBytecodeFunction(def.Args, def.Body)
 	if err != nil {
 		return err
 	}
-	env.DefineGlobal(def.Name, function)
+
+	env.DefineGlobalFunction(def.Name, &bytecodeFunc, &FullUntyped{args: def.Args})
 	return nil
 }
